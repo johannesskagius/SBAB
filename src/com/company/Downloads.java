@@ -23,16 +23,11 @@ public class Downloads {
     // https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=SiteId
     Map<Integer, String> getStops () throws MalformedURLException {
         Map<Integer, String> stopIDToName = new HashMap<> ();
-        final URL url = new URL ( "https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=stop&JourneyPatternPointNumber" );
+        final URL url = new URL ( "https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=stop" );
         if (checkURLConn ( url )) {
             //Download data
             try (InputStream is = url.openStream ()) {
-                BufferedReader rd = new BufferedReader ( new InputStreamReader ( is,StandardCharsets.UTF_8 ) );
-                String jsonText = readAll ( rd );
-                JSONParser jsonParser = new JSONParser ();
-                JSONObject allData = (JSONObject) jsonParser.parse ( jsonText );
-                JSONObject responseDatadata = (JSONObject) allData.get ( "ResponseData" );
-                JSONArray data = (JSONArray) responseDatadata.get ( "Result" );
+                JSONArray data = getJsonArray ( is );
 
                 for (Object stopPointData : data) {
                     JSONObject bussStop = (JSONObject) stopPointData;
@@ -48,23 +43,35 @@ public class Downloads {
         throw new RuntimeException ();
     }
 
-
     JSONArray getBussLines () throws IOException {
         final URL URL = new URL ( "https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=jour&DefaultTransportModeCode=BUS" );
         try (InputStream is = URL.openStream ()) {
-            BufferedReader rd = new BufferedReader ( new InputStreamReader ( is,StandardCharsets.UTF_8 ) );
-            String jsonText = readAll ( rd );
-            JSONParser jsonParser = new JSONParser ();
-            is.close ();
-
-            JSONObject jsonObject = (JSONObject) jsonParser.parse ( jsonText );
-            JSONObject responseDatadata = (JSONObject) jsonObject.get ( "ResponseData" );
-            return (JSONArray) responseDatadata.get ( "Result" );
+            return getJsonArray ( is );
 
         } catch (ParseException e) {
             e.printStackTrace ();
         }
         throw new RuntimeException ();
+    }
+
+    /**
+     *
+     * Method takes an InputStream and converts it to a jsonArray;
+     *
+     * @param is takes inputstream
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    private JSONArray getJsonArray (InputStream is) throws IOException, ParseException {
+        BufferedReader rd = new BufferedReader ( new InputStreamReader ( is,StandardCharsets.UTF_8 ) );
+        String jsonText = readAll ( rd );
+        JSONParser jsonParser = new JSONParser ();
+        is.close ();
+
+        JSONObject jsonObject = (JSONObject) jsonParser.parse ( jsonText );
+        JSONObject responseDatadata = (JSONObject) jsonObject.get ( "ResponseData" );
+        return (JSONArray) responseDatadata.get ( "Result" );
     }
 
     private String readAll (Reader rd) throws IOException {
