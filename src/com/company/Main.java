@@ -1,8 +1,5 @@
 package com.company;
 
-
-//import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +17,9 @@ public class Main {
         System.out.println (efficiency);
     }
 
+    /**
+     * runner method that calls the methods.
+     */
     void run () {
         //Download stops
         try {

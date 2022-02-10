@@ -72,9 +72,12 @@ class BussLines {
     }
 
 
-    class TopRankings {
-        private static final int BUSSLINES_IN_RANK = 3;
-        private final List<Buss> mostStops = new ArrayList<> ();
+    /**
+     * Support innerclass of toprankings.
+     */
+   private class TopRankings {
+         static final int BUSSLINES_IN_RANK = 4;
+         final List<Buss> mostStops = new ArrayList<> ();
 
         void AddToRank (Buss buss) {
             //Add busline to top rank,
@@ -83,7 +86,7 @@ class BussLines {
             Collections.sort ( mostStops );
             // delete the last element
             if (mostStops.size () > BUSSLINES_IN_RANK) {
-                mostStops.remove ( mostStops.size () - 1 );
+                mostStops.remove ( mostStops.size () - 1);
             }
         }
 
@@ -93,9 +96,11 @@ class BussLines {
             }
         }
     }
-    class Buss implements Comparable<Buss> {
-        String lineNo;
-        List<String> bussStops;
+
+
+   private class Buss implements Comparable<Buss> {
+         String lineNo;
+         List<String> bussStops;
 
         public Buss (String lineNo,List<String> bussStops) {
             this.lineNo = lineNo;
@@ -117,20 +122,29 @@ class BussLines {
 
         @Override
         public String toString () {
-            return "LineNumber='" + lineNo + '\'' +
+            return "LineNumber='" + lineNo + '\''+bussStops.size () +
                     ", bussStops=" + printStopNo () + "\n";
         }
 
         @Override
         public int compareTo (Buss o) {
             if (o != null) {
-                return o.bussStops.size () < this.bussStops.size () ? -1 : 1;
+               // return o.bussStops.size () < this.bussStops.size () ? -1 : 1;
+                return o.bussStops.size () < this.bussStops.size () ? 1 : -1;
             }
             throw new RuntimeException ();
         }
     }
 }
 
-
-
-
+//"LineNumber":"636","DirectionCode":"              232
+//"LineNumber":"626","DirectionCode":"              227
+//"LineNumber":"637","DirectionCode":"              208
+//"LineNumber":"620","DirectionCode":"              186
+//"LineNumber":"639","DirectionCode":"              169
+//"LineNumber":"312","DirectionCode":"              162
+//"LineNumber":"785","DirectionCode":"              155
+//"LineNumber":"783","DirectionCode":"              154
+//"LineNumber":"634","DirectionCode":"              153
+//"LineNumber":"652","DirectionCode":"              153
+//"LineNumber":"957","DirectionCode":"              153

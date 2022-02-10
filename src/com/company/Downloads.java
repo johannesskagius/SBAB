@@ -14,17 +14,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Downloads {
-     Map<Integer, String> getStops () throws MalformedURLException {
-        Map<Integer, String> stopIDToName = new HashMap<> ();
+    /**
+     * Download all the stops from the api, saves the position in a hashmap.
+     * @return
+     * @throws MalformedURLException
+     */
 
+    // https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=SiteId
+    Map<Integer, String> getStops () throws MalformedURLException {
+        Map<Integer, String> stopIDToName = new HashMap<> ();
         final URL url = new URL ( "https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=stop&JourneyPatternPointNumber" );
-        if(checkURLConn (url )){
+        if (checkURLConn ( url )) {
             //Download data
             try (InputStream is = url.openStream ()) {
                 BufferedReader rd = new BufferedReader ( new InputStreamReader ( is,StandardCharsets.UTF_8 ) );
                 String jsonText = readAll ( rd );
                 JSONParser jsonParser = new JSONParser ();
-                JSONObject allData = (JSONObject) jsonParser.parse (jsonText);
+                JSONObject allData = (JSONObject) jsonParser.parse ( jsonText );
                 JSONObject responseDatadata = (JSONObject) allData.get ( "ResponseData" );
                 JSONArray data = (JSONArray) responseDatadata.get ( "Result" );
 
