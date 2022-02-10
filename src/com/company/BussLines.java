@@ -4,12 +4,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 class BussLines {
     private final TopRankings topRank = new TopRankings ();
-    Downloads downloads;
     private final Map<Integer, String> stopIDToName;
+    Downloads downloads;
 
     public BussLines (Map<Integer, String> stopIDToName,Downloads downloads) {
         this.stopIDToName = stopIDToName;
@@ -23,6 +26,7 @@ class BussLines {
      * Sends the data to countStops(). -> read instructions for that method.
      * Receives updated count. Count has counted how many objects ahead in data are from the same line, there is no need to go over them again. i= counts lets the forloop to jump x nr of stops
      * ahead to lower the total number of iterations within the forloop.
+     *
      * @throws IOException
      */
 
@@ -32,6 +36,7 @@ class BussLines {
             int count = 0;
             ArrayList<String> busslines = new ArrayList<> ();
             JSONObject bussLine = (JSONObject) data.get ( i );
+            String direction = (String) bussLine.get ( "DirectionCode" );
             String journeyPatterPointNumber = (String) bussLine.get ( "JourneyPatternPointNumber" );
             busslines.add ( journeyPatterPointNumber );
             String lineNr = (String) bussLine.get ( "LineNumber" );
@@ -39,14 +44,14 @@ class BussLines {
             Buss bussLine1 = new Buss ( lineNr,busslines );
             topRank.AddToRank ( bussLine1 );
             i += count;
+
         }
     }
 
     /**
-     *
-     * @param data Array of data
-     * @param i current position in the array of data
-     * @param count counts how many objects ahead are from the same buss line.
+     * @param data      Array of data
+     * @param i         current position in the array of data
+     * @param count     counts how many objects ahead are from the same buss line.
      * @param busslines saves the steps ahead that are on the same bussline
      * @param lineNr
      * @returns counts to the
@@ -75,9 +80,9 @@ class BussLines {
     /**
      * Support innerclass of toprankings.
      */
-   private class TopRankings {
-         static final int BUSSLINES_IN_RANK = 4;
-         final List<Buss> mostStops = new ArrayList<> ();
+    private class TopRankings {
+        static final int BUSSLINES_IN_RANK = 4;
+        final List<Buss> mostStops = new ArrayList<> ();
 
         void AddToRank (Buss buss) {
             //Add busline to top rank,
@@ -86,7 +91,7 @@ class BussLines {
             Collections.sort ( mostStops );
             // delete the last element
             if (mostStops.size () > BUSSLINES_IN_RANK) {
-                mostStops.remove ( mostStops.size () - 1);
+                mostStops.remove ( mostStops.size () - 1 );
             }
         }
 
@@ -98,9 +103,9 @@ class BussLines {
     }
 
 
-   private class Buss implements Comparable<Buss> {
-         String lineNo;
-         List<String> bussStops;
+    private class Buss implements Comparable<Buss> {
+        String lineNo;
+        List<String> bussStops;
 
         public Buss (String lineNo,List<String> bussStops) {
             this.lineNo = lineNo;
@@ -122,15 +127,15 @@ class BussLines {
 
         @Override
         public String toString () {
-            return "LineNumber='" + lineNo + '\''+bussStops.size () +
+            return "LineNumber='" + lineNo + '\'' + bussStops.size () +
                     ", bussStops=" + printStopNo () + "\n";
         }
 
         @Override
         public int compareTo (Buss o) {
             if (o != null) {
-               // return o.bussStops.size () < this.bussStops.size () ? -1 : 1;
-                return o.bussStops.size () < this.bussStops.size () ? 1 : -1;
+                return o.bussStops.size () < this.bussStops.size () ? -1 : 1;
+                //return o.bussStops.size () < this.bussStops.size () ? 1 : -1;
             }
             throw new RuntimeException ();
         }
