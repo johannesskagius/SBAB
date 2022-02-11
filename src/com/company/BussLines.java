@@ -12,9 +12,9 @@ import java.util.Map;
 class BussLines {
     private final TopRankings topRank = new TopRankings ();
     private final Map<Integer, String> stopIDToName;
-    Downloads downloads;
+    ApiConnection downloads;
 
-    public BussLines (Map<Integer, String> stopIDToName,Downloads downloads) {
+    public BussLines (Map<Integer, String> stopIDToName,ApiConnection downloads) {
         this.stopIDToName = stopIDToName;
         this.downloads = downloads;
     }
@@ -27,7 +27,7 @@ class BussLines {
      * Receives updated count. Count has counted how many objects ahead in data are from the same line, there is no need to go over them again. i= counts lets the forloop to jump x nr of stops
      * ahead to lower the total number of iterations within the forloop.
      *
-     * @throws IOException
+     * @throws IOException if getBusslines fails. either because of malformued url or because a reader fails.
      */
 
     public void getBussLines () throws IOException {
@@ -40,11 +40,11 @@ class BussLines {
             String journeyPatterPointNumber = (String) bussLine.get ( "JourneyPatternPointNumber" );
             busslines.add ( journeyPatterPointNumber );
             String lineNr = (String) bussLine.get ( "LineNumber" );
+
             count = countStops ( data,i,count,busslines,lineNr );
             Buss bussLine1 = new Buss ( lineNr,busslines );
-            topRank.AddToRank ( bussLine1 );
+            topRank.addToRank ( bussLine1 );
             i += count;
-
         }
     }
 
@@ -53,8 +53,8 @@ class BussLines {
      * @param i         current position in the array of data
      * @param count     counts how many objects ahead are from the same buss line.
      * @param busslines saves the steps ahead that are on the same bussline
-     * @param lineNr
-     * @returns counts to the
+     * @param lineNr    the current bussline No
+     * @return counts to the position ahead that are from the same bussline
      */
     private int countStops (JSONArray data,int i,int count,ArrayList<String> busslines,String lineNr) {
         for (int j = i; j < data.size (); j++) {
@@ -71,20 +71,18 @@ class BussLines {
         return count;
     }
 
-
     public void printTopScorers () {
         topRank.printTopScorers ();
     }
-
 
     /**
      * Support innerclass of toprankings.
      */
     private class TopRankings {
-        static final int BUSSLINES_IN_RANK = 4;
+        static final int BUSSLINES_IN_RANK = 10;
         final List<Buss> mostStops = new ArrayList<> ();
 
-        void AddToRank (Buss buss) {
+        void addToRank (Buss buss) {
             //Add busline to top rank,
             mostStops.add ( buss );
             // sort with collections sort,
@@ -101,8 +99,6 @@ class BussLines {
             }
         }
     }
-
-
     private class Buss implements Comparable<Buss> {
         String lineNo;
         List<String> bussStops;
@@ -127,7 +123,7 @@ class BussLines {
 
         @Override
         public String toString () {
-            return "LineNumber='" + lineNo + '\'' + bussStops.size () +
+            return "LineNumber='" + lineNo + '\''+" bussstops: "+ bussStops.size () +
                     ", bussStops=" + printStopNo () + "\n";
         }
 
@@ -135,7 +131,6 @@ class BussLines {
         public int compareTo (Buss o) {
             if (o != null) {
                 return o.bussStops.size () < this.bussStops.size () ? -1 : 1;
-                //return o.bussStops.size () < this.bussStops.size () ? 1 : -1;
             }
             throw new RuntimeException ();
         }

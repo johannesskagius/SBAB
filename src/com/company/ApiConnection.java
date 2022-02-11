@@ -13,11 +13,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Downloads {
+public class ApiConnection {
     /**
      * Download all the stops from the api, saves the position in a hashmap.
-     * @return
-     * @throws MalformedURLException
+     * @return Map with buss stops id as key and buss stop name as vale
+     * @throws MalformedURLException if URL connection isn't good.
      */
 
     // https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=SiteId
@@ -43,25 +43,24 @@ public class Downloads {
         throw new RuntimeException ();
     }
 
-    JSONArray getBussLines () throws IOException {
+    JSONArray getBussLines () throws MalformedURLException {
         final URL URL = new URL ( "https://api.sl.se/api2/linedata.json?key=5da196d47f8f4e5facdb68d2e25b9eae&model=jour&DefaultTransportModeCode=BUS" );
         try (InputStream is = URL.openStream ()) {
             return getJsonArray ( is );
 
-        } catch (ParseException e) {
+        } catch (ParseException | IOException e) {
             e.printStackTrace ();
         }
         throw new RuntimeException ();
     }
 
     /**
-     *
      * Method takes an InputStream and converts it to a jsonArray;
      *
      * @param is takes inputstream
-     * @return
-     * @throws IOException
-     * @throws ParseException
+     * @return The JsonArray our data is in.
+     * @throws IOException throws exception if readall fails.
+     * @throws ParseException if the jsonText can't be parsed to a json Object.
      */
     private JSONArray getJsonArray (InputStream is) throws IOException, ParseException {
         BufferedReader rd = new BufferedReader ( new InputStreamReader ( is,StandardCharsets.UTF_8 ) );
@@ -73,6 +72,14 @@ public class Downloads {
         JSONObject responseDatadata = (JSONObject) jsonObject.get ( "ResponseData" );
         return (JSONArray) responseDatadata.get ( "Result" );
     }
+
+
+    /**
+     * Support  methods
+     * @param rd is a buffered reader with assigned values
+     * @return a JSON string
+     * @throws IOException if the rd fails for some reason
+     */
 
     private String readAll (Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder ();

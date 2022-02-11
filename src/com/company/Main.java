@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class Main {
-    private final Downloads downloads = new Downloads ();
+    private final ApiConnection apiCon = new ApiConnection ();
 
     public static void main (String[] args) {
         Main main = new Main ();
@@ -21,11 +21,10 @@ public class Main {
     void run () {
         //Download stops
         try {
-            Map<Integer, String> stopIDToName = downloads.getStops ();
-            BussLines bussLines = new BussLines ( stopIDToName, downloads );
+            Map<Integer, String> stopIDToName = apiCon.getStops ();
+            BussLines bussLines = new BussLines ( stopIDToName,apiCon );
             bussLines.getBussLines ();
             bussLines.printTopScorers();
-
         } catch (IOException e) {
             e.printStackTrace ();
         }
